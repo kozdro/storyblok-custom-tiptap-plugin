@@ -1,38 +1,36 @@
 <template>
-  <div>
-    <TipTapEditor v-model="model.content" />
+  <div class="extended-richtext">
+    <TipTap v-model="model.content" />
   </div>
 </template>
 
 <script>
-import TipTapEditor from './TipTapEditor.vue';
+import TipTap from './TipTap.vue';
 
 export default {
   components: {
-    TipTapEditor,
+    TipTap,
   },
   mixins: [window.Storyblok.plugin],
-  data() {
-    return {
-      editor: null,
-    };
+  watch: {
+    'model': {
+      handler: function(value) {
+        this.$emit('changed-model', value);
+      },
+      deep: true,
+    },
   },
   methods: {
     initWith() {
       return {
-        plugin: 'tiptap-test', // Replace with the name of your plugin
-        example: 'Hello World!',
-        content: {},
+        plugin: 'extended-rich-text-editor',
+        content: '',
       };
     },
+
+    pluginCreated() {
+      console.log('plugin:created dumbos tip tap');
+    },
   },
-  watch: {
-    'model': {
-      handler: function (value) {
-        this.$emit('changed-model', value);
-      },
-      deep: true
-    }
-  }
 };
 </script>
