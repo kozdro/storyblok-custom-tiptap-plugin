@@ -271,7 +271,7 @@ import LetterSpacingIcon from '../assets/LetterSpacingIcon.svg'
 import ArrowRightIcon from '../assets/ArrowRightIcon.svg'
 
 const SpacingMark = Mark.create({
-  name: 'margin',
+  name: 'spacing',
 
   addOptions() {
     return {
