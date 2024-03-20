@@ -23,7 +23,7 @@ export default {
   methods: {
     initWith() {
       return {
-        plugin: 'extended-rich-text-editor',
+        plugin: 'rich-text-custom-tip-tap',
         content: '',
       };
     },
