@@ -304,7 +304,6 @@ const SpacingMark = Mark.create({
   addCommands() {
     return {
       setSpacing: (direction, value) => ({ commands }) => {
-        console.log(direction, value)
         return commands.setMark(this.name, { class: `inline-block ${direction}-${value}` })
       },
       unsetSpacing: () => ({ commands }) => {
