@@ -1,3 +1,4 @@
+import './main.css';
 import { EditorContent } from '@tiptap/vue-2';
 import Plugin from './Plugin.vue'
 

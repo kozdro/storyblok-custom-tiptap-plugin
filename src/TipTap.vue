@@ -139,6 +139,86 @@
       </div>
 
       <div class="editor-toolbar__row">
+        <span>Margin</span>
+        <select
+          v-model="marginDirection" 
+          name="margin" 
+          id="margin" 
+          @change="editor.chain().focus().setSpacing(marginDirection, marginValue).run()"
+        >
+          <option value="m">All</option>
+          <option value="mx">Horizontal</option>
+          <option value="my">Vertical</option>
+          <option value="mt">Top</option>
+          <option value="mb">Bottom</option>
+          <option value="ml">Left</option>
+          <option value="mr">Right</option>
+        </select>
+        <select 
+          v-model="marginValue" 
+          name="margin-value" 
+          id="margin-value" 
+          @change="editor.chain().focus().setSpacing(marginDirection, marginValue).run()"
+        >
+          <option value="0">0px</option>
+          <option value="px">1px</option>
+          <option value="0.5">2px</option>
+          <option value="1">4px</option>
+          <option value="1.5">6px</option>
+          <option value="2">8px</option>
+          <option value="2.5">10px</option>
+          <option value="3">12px</option>
+          <option value="3.5">14px</option>
+          <option value="4">16px</option>
+          <option value="5">20px</option>
+          <option value="6">24px</option>
+          <option value="7">28px</option>
+          <option value="8">32px</option>
+        </select>
+        <button type="button" @click="editor.chain().focus().unsetSpacing().run()">unset</button>
+      </div>
+
+      <div class="editor-toolbar__row">
+        <span>Padding</span>
+        <select 
+          v-model="paddingDirection"
+          name="padding" 
+          id="padding" 
+          @change="editor.chain().focus().setSpacing(paddingDirection, paddingValue).run()"
+        >
+          <option value="p">All</option>
+          <option value="px">Horizontal</option>
+          <option value="py">Vertical</option>
+          <option value="pt">Top</option>
+          <option value="pb">Bottom</option>
+          <option value="pl">Left</option>
+          <option value="pr">Right</option>
+        </select>
+        <select 
+          v-model="paddingValue" 
+          name="padding-value" 
+          id="padding-value" 
+          @change="editor.chain().focus().setSpacing(paddingDirection, paddingValue).run()"
+        >
+          <option value="0">0px</option>
+          <option value="px">1px</option>
+          <option value="0.5">2px</option>
+          <option value="1">4px</option>
+          <option value="1.5">6px</option>
+          <option value="2">8px</option>
+          <option value="2.5">10px</option>
+          <option value="3">12px</option>
+          <option value="3.5">14px</option>
+          <option value="4">16px</option>
+          <option value="5">20px</option>
+          <option value="6">24px</option>
+          <option value="7">28px</option>
+          <option value="8">32px</option>
+        </select>
+        <button type="button" @click="editor.chain().focus().unsetSpacing().run()">unset</button>
+      </div>
+
+      <div class="editor-toolbar__row">
         <button
           @click="editor.chain().focus().setLetterSpacing('3px').run()"
           :class="{ 'is-active': editor.isActive('textStyle', { letterSpacing: '3px' }) }"
@@ -158,6 +238,7 @@
 import debounce from 'lodash.debounce'
 
 import { Editor, EditorContent } from '@tiptap/vue-2'
+import { Mark, mergeAttributes} from '@tiptap/core'
 import { Color } from '@tiptap/extension-color'
 import StarterKit from '@tiptap/starter-kit'
 import TextStyle from '@tiptap/extension-text-style'
@@ -188,6 +269,49 @@ import ListUnorderedIcon from '../assets/ListUnorderedIcon.svg'
 import ListOrderedIcon from '../assets/ListOrderedIcon.svg'
 import LetterSpacingIcon from '../assets/LetterSpacingIcon.svg'
 import ArrowRightIcon from '../assets/ArrowRightIcon.svg'
+
+const SpacingMark = Mark.create({
+  name: 'spacing',
+
+  addOptions() {
+    return {
+      HTMLAttributes: {}
+    }
+  },
+
+  addAttributes() {
+    return {
+      class: {
+        default: null,
+        parseHTML: element => element.getAttribute('class'),
+        renderHTML: attributes => {
+          if (!attributes.class) {
+            return {};
+          }
+
+          return {
+            class: attributes.class,
+          };
+        },
+      },
+    };
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ['span', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0]
+  },
+
+  addCommands() {
+    return {
+      setSpacing: (direction, value) => ({ commands }) => {
+        return commands.setMark(this.name, { class: `inline-block ${direction}-${value}` })
+      },
+      unsetSpacing: () => ({ commands }) => {
+        return commands.unsetMark(this.name)
+      }
+    }
+  },
+})
 
 export default {
   name: 'TipTap',
@@ -221,6 +345,10 @@ export default {
   data() {
     return {
       editor: null,
+      marginDirection: 'm',
+      marginValue: '0',
+      paddingDirection: 'p',
+      paddingValue: '0',
     }
   },
   mounted() {
@@ -241,6 +369,7 @@ export default {
         FontWeight,
         LetterSpacing,
         ButtonLink,
+        SpacingMark,
       ],
       content: this.value, 
     })
@@ -306,6 +435,14 @@ export default {
         .extendMarkRange('link')
         .setButtonLink({ href })
         .run()
+    },
+
+    unsetSpacing() {
+      this.marginDirection = 'm'
+      this.marginValue = '0'
+      this.paddingDirection = 'p'
+      this.paddingValue = '0'
+      this.editor.chain().focus().unsetSpacing().run()
     }
   }
 }
